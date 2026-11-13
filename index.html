@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Forge | GRID - The Factory Game</title>
+    <style>
+        /* Reset and Core Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0d0e12;
+            color: #c5c6c7;
+            line-height: 1.6;
+        }
+
+        /* Main Navigation Bar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background-color: #161920;
+            border-bottom: 2px solid #00ffcc;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ffcc;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        /* Studio Hero Intro */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 110px 20px;
+            background: linear-gradient(rgba(13, 14, 18, 0.85), rgba(13, 14, 18, 0.95)), url('hero-bg.jpg') no-repeat center center/cover;
+        }
+
+        .hero h1 {
+            font-size: 3.8rem;
+            color: #ffffff;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .hero h1 span {
+            color: #00ffcc;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 650px;
+            margin-bottom: 40px;
+            color: #94a3b8;
+        }
+
+        /* Content Layout Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #ffffff;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background-color: #00ffcc;
+            margin: 12px auto 0;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 35px;
+        }
+
+        /* Game Cards */
+        .game-card {
+            background-color: #161920;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #242936;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: #00ffcc;
+            box-shadow: 0 10px 20px rgba(0, 255, 204, 0.05);
+        }
+
+        .game-media {
+            width: 100%;
+            height: 230px;
+            background-color: #090a0d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a5568;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #242936;
+        }
+
+        .game-info {
+            padding: 25px;
+        }
+
+        .game-title {
+            font-size: 1.6rem;
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+
+        .game-desc {
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+            color: #94a3b8;
+        }
+
+        /* Action/Paywall Buttons */
+        .btn-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn-demo {
+            background-color: transparent;
+            color: #00ffcc;
+            border: 2px solid #00ffcc;
+        }
+
+        .btn-demo:hover {
+            background-color: rgba(0, 255, 204, 0.08);
+        }
+
+        .btn-buy {
+            background-color: #00ffcc;
+            color: #0d0e12;
+            border: 2px solid #00ffcc;
+        }
+
+        .btn-buy:hover {
+            background-color: #00e6b8;
+            border-color: #00e6b8;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        /* Studio Footer */
+        footer {
+            text-align: center;
+            padding: 50px 20px;
+            background-color: #090a0d;
+            border-top: 1px solid #161920;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Navigation Bar -->
+<nav>
+    <div class="logo">Matrix Forge</div>
+    <div>
+        {% if username %}
+            <span style="color: #94a3b8; margin-right: 15px;">Operator: <strong style="color: #00ffcc;">{{ username }}</strong></span>
+            <a href="/logout" style="color: #94a3b8; text-decoration: none; font-size: 0.9rem;">Log Out</a>
+        {% else %}
+            <a href="login.html" style="color: #c5c6c7; text-decoration: none; margin-right: 20px;">Log In</a>
+            <a href="signup.html" class="btn btn-demo" style="padding: 8px 18px;">Create Account</a>
+        {% endif %}
+    </div>
+</nav>
+
+    <!-- Main Games Portal -->
+    <main class="container">
+        <h2 class="section-title">Current Projects</h2>
+        
+        <div class="game-grid">
+            
+            <!-- GRID Card Component -->
+            <article class="game-card">
+                <div class="game-media">
+                    [ SHOWCASE: INPUT FACTORY LAYOUT GIF / SCREENSHOT ]
+                </div>
+                
+                <div class="game-info">
+                    <h3 class="game-title">GRID - The Factory Game</h3>
+                    <p class="game-desc">A highly-optimized 2D logistical automation engine. Structure complex pipeline arrays, map routing tiles, manage resource throughput loops, and push the performance bounds of your assembly systems.</p>
+                    
+                    <div class="btn-group">
+                        <!-- Restricted sandbox/demo evaluation build -->
+                        <a href="downloads/grid_demo.zip" class="btn btn-demo" download>Download Demo</a>
+                        
+                        <!-- Full paid tier build distribution -->
+                        <a href="https://itch.io" class="btn btn-buy">Unlock Full (£2.99)</a>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+    </main>
+
+    <!-- Structural Footer -->
+    <footer>
+        <p>&copy; 2026 MATRIX FORGE STUDIOS. HARDWARE LEVEL OPTIMISATION. ALL RIGHTS RESERVED.</p>
+    </footer>
+
+</body>
+</html>
