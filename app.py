@@ -20,9 +20,11 @@ def init_db():
     conn.commit()
     conn.close()
 
+# Runs automatically on Render when Gunicorn starts
+init_db()
+
 @app.route("/")
 def home():
-    # Pass the logged-in username (if any) to the landing page
     return render_template("index.html", username=session.get("username"))
 
 @app.route("/index.html")
@@ -57,7 +59,6 @@ def register():
         
         session["username"] = username
         session["email"] = email
-        # Send them back to the landing page after signing up
         return redirect(url_for("home"))
     except sqlite3.IntegrityError:
         return "That email is already registered! Go back and Log In."
@@ -76,17 +77,14 @@ def login():
     if user and check_password_hash(user[1], password):
         session["username"] = user[0]
         session["email"] = email
-        # Send them back to the landing page after logging in
         return redirect(url_for("home"))
     return "Invalid email or password! Go back and try again."
 
 @app.route("/checkout")
 def checkout():
-    # Require an account before buying so we know who owns the game
     if "username" not in session:
         return redirect(url_for("signup_page"))
     return render_template("checkout.html", username=session["username"])
 
 if __name__ == "__main__":
-    init_db()
     app.run(debug=False)
