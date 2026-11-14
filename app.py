@@ -1,26 +1,45 @@
+import os
 import sqlite3
+import psycopg2
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = "matrix_forge_super_secret_key"
 
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+def get_db_connection():
+    if DATABASE_URL:
+        return psycopg2.connect(DATABASE_URL)
+    return sqlite3.connect("users.db")
+
 def init_db():
-    conn = sqlite3.connect("users.db")
+    conn = get_db_connection()
     c = conn.cursor()
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            has_paid INTEGER DEFAULT 0
-        )
-    """)
+    if DATABASE_URL:
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                username TEXT NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                has_paid INTEGER DEFAULT 0
+            )
+        """)
+    else:
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                has_paid INTEGER DEFAULT 0
+            )
+        """)
     conn.commit()
     conn.close()
 
-# Runs automatically on Render when Gunicorn starts
 init_db()
 
 @app.route("/")
@@ -51,16 +70,19 @@ def register():
     hashed_pw = generate_password_hash(request.form["password"])
 
     try:
-        conn = sqlite3.connect("users.db")
+        conn = get_db_connection()
         c = conn.cursor()
-        c.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", (username, email, hashed_pw))
+        if DATABASE_URL:
+            c.execute("INSERT INTO users (username, email, password) VALUES (%s, %s, %s)", (username, email, hashed_pw))
+        else:
+            c.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", (username, email, hashed_pw))
         conn.commit()
         conn.close()
         
         session["username"] = username
         session["email"] = email
         return redirect(url_for("home"))
-    except sqlite3.IntegrityError:
+    except Exception:
         return "That email is already registered! Go back and Log In."
 
 @app.route("/login", methods=["POST"])
@@ -68,9 +90,12 @@ def login():
     email = request.form["email"]
     password = request.form["password"]
 
-    conn = sqlite3.connect("users.db")
+    conn = get_db_connection()
     c = conn.cursor()
-    c.execute("SELECT username, password FROM users WHERE email = ?", (email,))
+    if DATABASE_URL:
+        c.execute("SELECT username, password FROM users WHERE email = %s", (email,))
+    else:
+        c.execute("SELECT username, password FROM users WHERE email = ?", (email,))
     user = c.fetchone()
     conn.close()
 
